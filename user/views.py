@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from .models import User
+from .models import User,Purchase
+from product.models import Product
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView , CreateView
 from django.utils.translation import gettext_lazy as _
 from rest_framework import generics
-from .serializer import UserSerializer
+from .serializer import UserSerializer,PurchaseSerializer
 from rest_framework.permissions import AllowAny,IsAdminUser , IsAuthenticated
 from django.db.models.fields.files import ImageFieldFile
 from decimal import Decimal
@@ -73,3 +74,27 @@ class UserViews(viewsets.ModelViewSet):
         else:
             result = {"result":"更新失敗"}
             return Response(result,status=status.HTTP_400_BAD_REQUEST)
+
+class PurchaseViews(viewsets.ModelViewSet):
+    queryset = Purchase.objects.all()
+    serializer_class =PurchaseSerializer
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'destroy']:
+            permission_classes = [IsAdminUser]
+        else:
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
+    
+    def create(self,request):
+        serializer = PurchaseSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            result = {
+                'success':'購買完成',
+                'data':serializer.data
+            }
+            return Response(result,status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

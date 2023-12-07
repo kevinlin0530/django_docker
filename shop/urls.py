@@ -16,13 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path , include
 from rest_framework.routers import DefaultRouter
-# from product.models import Product
-from user.views import UserViews
+from product.views import ProductView
+from user.views import UserViews,PurchaseViews
 from store.views import Storeview
 
 
-# product_router = DefaultRouter()
-# product_router.register(r'product',Product )
+product_router = DefaultRouter()
+product_router.register(r'',ProductView)
 
 user_router = DefaultRouter()
 user_router.register(r'',UserViews)
@@ -30,9 +30,13 @@ user_router.register(r'',UserViews)
 store_router = DefaultRouter()
 store_router.register(r'',Storeview)
 
+purchase_router = DefaultRouter()
+purchase_router.register(r'',PurchaseViews)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/registration/',include(user_router.urls)),
-    path('api/storesingup/',include(store_router.urls)),
+    path('api/storesignup/',include(store_router.urls)),
+    path('api/product/',include(product_router.urls)),
+    path('api/purchase/',include(purchase_router.urls))
 ]

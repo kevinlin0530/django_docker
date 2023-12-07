@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-# from django.utils import timezone
+from product.models import Product
+from store.models import Store
 from django.core.validators import RegexValidator
 
 class User(models.Model):
@@ -22,15 +23,9 @@ class User(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     is_email_verified = models.BooleanField(default=False)
     is_phone_verified = models.BooleanField(default=False)
-    purchases = models.ManyToManyField('Purchase', related_name='users', blank=True)
-    
-class Purchase(models.Model):
-    name = models.ForeignKey(User, on_delete=models.CASCADE)
-    # Add other fields related to the purchase
-    # For example, product_name, purchase_date, price, etc.
-    product_name = models.CharField(max_length=255)
-    purchase_date = models.DateTimeField(auto_now_add=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    purchases = models.ManyToManyField('Purchase', related_name='name', blank=True)
+    def __str__(self):
+        return self.name
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -39,7 +34,22 @@ class UserAdmin(admin.ModelAdmin):
     ordering = ('name',)
     filter_horizontal = ('purchases',)
 
-    def purchases_display(self, obj):
-        return ", ".join([purchase.product_name for purchase in obj.purchases.all()])
+    # def get_total_spent(self, obj):
+    #     return obj.total_spent
 
-    purchases_display.short_description = '購買記錄'  # 自定義欄位的名稱
+    # get_total_spent.short_description = '總消費'
+
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_purchases',default=None)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_purchases', default=None)
+    store_name = models.ForeignKey(Store, on_delete=models.CASCADE,related_name='store_purchases', default=None)
+    purchase_date = models.DateTimeField(auto_now_add=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2,default=None)
+
+    def __str__(self):
+        return f"{self.product.item} - {self.price} - {self.purchase_date} - {self.store_name.name}"
+    
+    # def purchases_display(self, obj):
+    #     return ", ".join([purchase.product_name for purchase in obj.purchases.all()])
+
+    # purchases_display.short_description = '購買記錄'  # 自定義欄位的名稱

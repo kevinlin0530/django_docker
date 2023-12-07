@@ -9,7 +9,12 @@ class Store(models.Model):
     products = models.ManyToManyField('product.Product', related_name='stores', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique_store_name')
+        ]
+    def __str__(self):
+        return self.name
 class LocationFilter(admin.SimpleListFilter):
     title = _('Location')
     parameter_name = 'location'

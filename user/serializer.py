@@ -1,6 +1,9 @@
 from rest_framework import serializers
-from .models import User
+from .models import User,Purchase
+from store.models import Store
+from product.models import Product
 from django.core.validators import RegexValidator
+from django.utils.translation import gettext_lazy as _
 
 class UserSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(input_formats=['%Y-%m-%d'])
@@ -43,4 +46,36 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("請輸入有效的身分證號碼")
 
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    user = serializers.CharField()
+    product = serializers.CharField()
+    store_name = serializers.CharField()
+    class Meta:
+        model = Purchase
+        fields = ['user','product','store_name','purchase_date']
+    # 跟data不同，data 在serializer呼叫時就會帶入，而validated_data 要serializer.is_vailed()後才會帶入資料
+    def create(self, validated_data):
+        user = validated_data['user']
+        product = validated_data['product']
+        store_name = validated_data['store_name']
+        try:
+            price = Product.objects.get(store_name=store_name, item=product).price
+        except Product.DoesNotExist as e:
+            raise serializers.ValidationError("商品或商家不存在")
+
+        # 由於沒有指定pk，導致django內自動產生pk，輸入資料時不能直接輸入名稱所做的處理
+        user_instance, _ = User.objects.get_or_create(name=user)
+        product_instance, _ = Product.objects.get_or_create(item=product)
+        store_instance, _ = Store.objects.get_or_create(name=store_name)
         
+        if store_name and product:
+            purchase = Purchase.objects.create(
+                user=user_instance,
+                product=product_instance,
+                store_name=store_instance,
+                price=price
+            )
+            return purchase
+        else:
+            raise serializers.ValidationError("商品或商家不存在")

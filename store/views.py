@@ -70,7 +70,21 @@ class Storeview(viewsets.ModelViewSet):
     def list(self,request):
         location = request.data.get('location')
         name = request.data.get('name')
-        if location:
+        if name and location:
+            queryset = Store.objects.filter(location=location,name=name)
+            serializer = StoreSerializer(queryset,many=True)
+            if queryset:
+                result = {
+                    'success':'以下是搜索結果',
+                    'data':serializer.data
+                }
+                return Response(result,status=status.HTTP_200_OK)
+            else:
+                result = {
+                    "failed":'目前無資料',
+                }
+                return Response(result,status=status.HTTP_404_NOT_FOUND)
+        elif location:
             queryset = Store.objects.filter(location=location)
             serializer = StoreSerializer(queryset,many=True)
             if queryset:
