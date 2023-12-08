@@ -90,10 +90,10 @@ class PurchaseViews(viewsets.ModelViewSet):
         serializer = PurchaseSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
+            purchase_instances=serializer.save()
             result = {
                 'success':'購買完成',
-                'data':serializer.data
+                'data': PurchaseSerializer(purchase_instances, many=True).data
             }
             return Response(result,status=status.HTTP_201_CREATED)
         else:

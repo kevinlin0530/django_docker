@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from product.models import Product
 from store.models import Store
 from django.core.validators import RegexValidator
+from django.db.models import Sum, Count
 
 class User(models.Model):
     email = models.EmailField(unique=True,null=True)
@@ -27,17 +28,11 @@ class User(models.Model):
     def __str__(self):
         return self.name
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['name', 'gender', 'birthday', 'phone_number', 'created_at','update_time', 'is_email_verified', 'is_phone_verified']
-    search_fields = ('name','gender',)
-    ordering = ('name',)
-    filter_horizontal = ('purchases',)
-
-    # def get_total_spent(self, obj):
-    #     return obj.total_spent
-
-    # get_total_spent.short_description = '總消費'
+# @admin.register(User)
+# class UserAdmin(admin.ModelAdmin):
+#     list_display = ['name', 'gender', 'birthday', 'phone_number', 'created_at','update_time', 'is_email_verified', 'is_phone_verified']
+#     search_fields = ('name','gender',)
+#     ordering = ('name',)
 
 class Purchase(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_purchases',default=None)
@@ -47,9 +42,19 @@ class Purchase(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2,default=None)
 
     def __str__(self):
-        return f"{self.product.item} - {self.price} - {self.purchase_date} - {self.store_name.name}"
+        return f"{self.product.item}"
     
-    # def purchases_display(self, obj):
-    #     return ", ".join([purchase.product_name for purchase in obj.purchases.all()])
+class PurchaseInline(admin.TabularInline):  # 或者 admin.StackedInline，視覺風格不同
+    model = Purchase
+    extra = 0  # 控制要顯示的空白表單數量
+    show_change_link = True  # 點擊每行可以進入該對應物件的編輯頁面
+    can_delete = True  # 顯示刪除按鈕
+    fields = ['product', 'store_name', 'price']  # 控制展示的字段
 
-    # purchases_display.short_description = '購買記錄'  # 自定義欄位的名稱
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ['name', 'gender', 'birthday', 'phone_number', 'created_at', 'update_time', 'is_email_verified', 'is_phone_verified']
+    search_fields = ('name', 'gender',)
+    ordering = ('name',)
+    inlines = [PurchaseInline]  # 將 PurchaseInline 加入這裡

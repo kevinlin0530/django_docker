@@ -4,7 +4,7 @@ from store.models import Store
 from product.models import Product
 from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
-
+import json
 class UserSerializer(serializers.ModelSerializer):
     birthday = serializers.DateField(input_formats=['%Y-%m-%d'])
     id_number = serializers.CharField(validators=[
@@ -48,6 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class PurchaseSerializer(serializers.ModelSerializer):
+    # 由於沒有指定pk，導致django內自動產生pk，輸入資料時不能直接輸入名稱所做的處理
     user = serializers.CharField()
     product = serializers.CharField()
     store_name = serializers.CharField()
@@ -57,25 +58,28 @@ class PurchaseSerializer(serializers.ModelSerializer):
     # 跟data不同，data 在serializer呼叫時就會帶入，而validated_data 要serializer.is_vailed()後才會帶入資料
     def create(self, validated_data):
         user = validated_data['user']
-        product = validated_data['product']
-        store_name = validated_data['store_name']
-        try:
-            price = Product.objects.get(store_name=store_name, item=product).price
-        except Product.DoesNotExist as e:
-            raise serializers.ValidationError("商品或商家不存在")
+        products = validated_data['product'].split(',')
+        store_names = validated_data['store_name'].split(',')
+        purchase_list = []
+        for i in range(len(products)):
+            try:
+                price = Product.objects.get(store_name=store_names[i], item=products[i]).price
+            except Product.DoesNotExist:
+                raise serializers.ValidationError(f"{products[i]}或{store_names[i]}不存在")
 
-        # 由於沒有指定pk，導致django內自動產生pk，輸入資料時不能直接輸入名稱所做的處理
-        user_instance, _ = User.objects.get_or_create(name=user)
-        product_instance, _ = Product.objects.get_or_create(item=product)
-        store_instance, _ = Store.objects.get_or_create(name=store_name)
-        
-        if store_name and product:
-            purchase = Purchase.objects.create(
-                user=user_instance,
-                product=product_instance,
-                store_name=store_instance,
-                price=price
-            )
-            return purchase
-        else:
-            raise serializers.ValidationError("商品或商家不存在")
+            # 第一個參數用來接參數，第二個參數為布林值，因為不使用，用_來拋棄
+            user_instance, _ = User.objects.get_or_create(name=user)
+            product_instance, _ = Product.objects.get_or_create(item=products[i],store_name=store_names[i])
+            store_instance, _ = Store.objects.get_or_create(name=store_names[i])
+            
+            if store_instance and product_instance:
+                purchase = Purchase.objects.create(
+                    user=user_instance,
+                    product=product_instance,
+                    store_name=store_instance,
+                    price=price
+                )
+                purchase_list.append(purchase)
+            else:
+                raise serializers.ValidationError("商品或商家不存在")
+        return purchase_list
