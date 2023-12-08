@@ -43,3 +43,16 @@ class ProductView(viewsets.ModelViewSet):
             return Response(result,status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+    def list(self,request):
+        item = request.data.get('item')
+        queryset = Product.objects.filter(item=item)
+        serializer = ProductSerializer(queryset,many=True)
+        if serializer:
+            result = {
+                'success':'以下是搜尋結果',
+                'data':serializer.data
+            }
+            return Response(result,status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors,status=status.HTTP_404_NOT_FOUND)
