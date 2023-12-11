@@ -28,12 +28,6 @@ class User(models.Model):
     def __str__(self):
         return self.name
 
-# @admin.register(User)
-# class UserAdmin(admin.ModelAdmin):
-#     list_display = ['name', 'gender', 'birthday', 'phone_number', 'created_at','update_time', 'is_email_verified', 'is_phone_verified']
-#     search_fields = ('name','gender',)
-#     ordering = ('name',)
-
 class Purchase(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_purchases',default=None)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_purchases', default=None)
@@ -42,7 +36,7 @@ class Purchase(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2,default=None)
 
     def __str__(self):
-        return f"{self.product.item}"
+        return f"{self.product.item}-{self.purchase_date}"
     
 class PurchaseInline(admin.TabularInline):  # 或者 admin.StackedInline，視覺風格不同
     model = Purchase

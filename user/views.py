@@ -15,9 +15,6 @@ import json
 from rest_framework.decorators import api_view, permission_classes ,action
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication ,TokenAuthentication
-from rest_framework.parsers import JSONParser ,FormParser,MultiPartParser
 from django.db.models import Q
 # Create your views here.
 
