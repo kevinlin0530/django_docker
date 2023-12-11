@@ -26,9 +26,9 @@ location: Store location
 {
     "success": "商店建立完成",
     "data": {
-        "id": 1,
         "name": "Example Store",
         "location": "Example Location"
+        "update_time":"update_time"
     }
 }
 
@@ -42,11 +42,11 @@ name: New store name (optional)
 location: New store location (optional)
 
 {
-    "success": "Store updated successfully",
+    "success": "資料更新成功",
     "data": {
-        "id": 1,
         "name": "Updated Store",
         "location": "Updated Location"
+        "update_time":"update_time"
     }
 }
 
@@ -59,17 +59,93 @@ location (optional): Filter stores by location
 name (optional): Filter stores by name
 
 {
-    "success": "Stores found",
+    "success": "以下是搜索結果",
     "data": [
         {
-            "id": 1,
             "name": "Example Store",
             "location": "Example Location"
         },
         {
-            "id": 2,
             "name": "Another Store",
             "location": "Another Location"
+            "update_time":"update_time"
+        }
+    ]
+}
+
+## List Stores
+
+```http
+GET /api/stores/
+```
+
+location (optional): Filter stores by location
+name (optional): Filter stores by name
+
+
+{
+    "success": "以下是搜索結果",
+    "data": [
+        {
+            "name": "Another Store",
+            "location": "Another Location"
+            "update_time":"update_time"
+        },
+        {
+            "name": "Another Store",
+            "location": "Another Location"
+            "update_time":"update_time"
+        }
+    ]
+}
+
+###　Products
+
+## Create a Product
+
+```http
+POST /api/products/
+```
+
+item: Product name
+store_name:store_name
+price:price
+
+{
+    "success": "產品上架成功",
+    "data": {
+        "item": "Example Product"
+        "store_name":"store_name"
+        "price":"price"
+        "update_time":"update_time"
+        "description":"description"
+    }
+}
+
+
+## List Products
+```http
+GET /api/products/
+```
+item (optional): Filter products by name
+
+
+{
+    "success": "Products found",
+    "data": [
+        {
+        "item": "以下是搜尋結果"
+        "store_name":"store_name"
+        "price":"price"
+        "update_time":"update_time"
+        "description":"description"
+        },
+        {
+        "item": "以下是搜尋結果"
+        "store_name":"store_name"
+        "price":"price"
+        "update_time":"update_time"
+        "description":"description"
         }
     ]
 }
