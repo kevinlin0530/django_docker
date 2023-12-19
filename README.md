@@ -78,34 +78,7 @@ name (optional): Filter stores by name
     ]
 }
 ```
-## List Stores
 
-#### Request
-
-```http
-GET /api/stores/
-```
-
-location (optional): Filter stores by location
-name (optional): Filter stores by name
-
-```bash
-{
-    "success": "以下是搜索結果",
-    "data": [
-        {
-            "name": "Another Store",
-            "location": "Another Location"
-            "update_time":"update_time"
-        },
-        {
-            "name": "Another Store",
-            "location": "Another Location"
-            "update_time":"update_time"
-        }
-    ]
-}
-```
 ###　Products
 
 ## Create a Product
