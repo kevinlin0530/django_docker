@@ -48,7 +48,7 @@ class ProductView(viewsets.ModelViewSet):
         item = request.data.get('item')
         queryset = Product.objects.filter(item=item)
         serializer = ProductSerializer(queryset,many=True)
-        if serializer:
+        if serializer.is_valid():
             result = {
                 'success':'以下是搜尋結果',
                 'data':serializer.data
