@@ -96,6 +96,7 @@ LOGGING = {
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# 資料庫已關閉
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
