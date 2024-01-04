@@ -1,6 +1,7 @@
 # Django Shopping System
 
 This project implements a simple shopping system using Django.
+(the database already shoutdowned change to your own database)
 
 ## Table of Contents
 
