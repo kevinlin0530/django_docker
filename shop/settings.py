@@ -97,16 +97,16 @@ LOGGING = {
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # 資料庫已關閉
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'shop',
-#         'USER': 'root',
-#         'PASSWORD': 'ZX79>7|K()C@}v|.',
-#         'HOST': '35.194.231.77',  # Set to the host where your MySQL server is running
-#         'PORT': '3306',       # Set to the port used by your MySQL server
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'shop',
+        'USER': 'root',
+        'PASSWORD': 'DXg%]LK,'*cAX]=5',
+        'HOST': '34.81.221.86',  # Set to the host where your MySQL server is running
+        'PORT': '3306',       # Set to the port used by your MySQL server
+    }
+}
 
 
 # Password validation
